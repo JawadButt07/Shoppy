@@ -3,7 +3,6 @@ pipeline {
     environment {
         IMAGE_NAME = 'shoppy-web'
         DOCKER_HUB_USER = 'jawadbutt07'
-        CONTAINER_NAME = 'shoppy_web'
     }
     stages {
         stage('Checkout') {
@@ -13,14 +12,18 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest .'
+                sh 'docker build --network=host -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest .'
             }
         }
         stage('Run Tests') {
             steps {
                 sh '''
                     docker run --rm \
+                    --network=ecommerce_default \
                     -e DB_HOST=db \
+                    -e DB_NAME=shoppy_db \
+                    -e DB_USER=shoppy_user \
+                    -e DB_PASSWORD=shoppy_pass \
                     ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest \
                     python manage.py test --verbosity=2 || true
                 '''
@@ -38,11 +41,9 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Kubernetes') {
+        stage('Deploy') {
             steps {
-                sh 'kubectl apply -f /ecommerce/k8s/'
-                sh 'kubectl rollout restart deployment/shoppy-web'
-                sh 'kubectl rollout status deployment/shoppy-web'
+                sh 'cd /ecommerce && docker compose up -d --build'
             }
         }
     }
