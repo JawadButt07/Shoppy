@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${IMAGE_NAME}:latest /ecommerce/'
+                sh 'docker build -t ${IMAGE_NAME}:latest ${WORKSPACE}'
             }
         }
         stage('Run Tests') {
@@ -30,7 +30,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'cd /ecommerce && docker compose up -d'
+                sh 'docker compose -f ${WORKSPACE}/docker-compose.yml up -d'
             }
         }
     }
