@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'docker compose -f ${WORKSPACE}/docker-compose.yml up -d'
+                sh 'docker restart shoppy_web shoppy_nginx'
             }
         }
     }
