@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Cart — ShopPy{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header"><h1>Your Cart</h1></div>
+
+  {% if cart.items.all %}
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:2rem;">
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart.items.all %}
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:12px;">
+                {% if item.product.image %}
+                  <img src="{{ item.product.image.url }}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;">
+                {% else %}
+                  <div style="width:56px;height:56px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">&#128722;</div>
+                {% endif %}
+                <div>
+                  <p style="font-weight:600;">{{ item.product.name }}</p>
+                  {% if not item.product.in_stock %}<span class="badge badge-red">Out of stock</span>{% endif %}
+                </div>
+              </div>
+            </td>
+            <td>${{ item.product.price }}</td>
+            <td>
+              <form method="POST" action="{% url 'update_cart' item.id %}" style="display:flex;gap:6px;align-items:center;">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" class="qty-input">
+                <button type="submit" class="btn btn-outline btn-sm">Update</button>
+              </form>
+            </td>
+            <td style="font-weight:700;">${{ item.subtotal }}</td>
+            <td>
+              <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger">Remove</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="card" style="padding:1.5rem;">
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;">Order Summary</h2>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:0.9rem;color:#666;">
+          <span>Items ({{ cart.item_count }})</span>
+          <span>${{ cart.total }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:0.9rem;color:#666;">
+          <span>Shipping</span><span>Free</span>
+        </div>
+        <div style="border-top:1px solid #e5e5e5;padding-top:12px;margin-top:12px;display:flex;justify-content:space-between;font-size:1.1rem;font-weight:800;">
+          <span>Total</span><span>${{ cart.total }}</span>
+        </div>
+        <a href="{% url 'checkout' %}" class="btn btn-amber" style="width:100%;text-align:center;margin-top:1.5rem;padding:12px;">Proceed to Checkout</a>
+        <a href="{% url 'product_list' %}" class="btn btn-outline" style="width:100%;text-align:center;margin-top:10px;padding:12px;">Continue Shopping</a>
+      </div>
+    </div>
+
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:4rem 0;">
+    <div style="font-size:4rem;margin-bottom:1rem;">&#128722;</div>
+    <h2 style="font-size:1.3rem;margin-bottom:0.5rem;">Your cart is empty</h2>
+    <p style="color:#888;margin-bottom:2rem;">Add some products to get started</p>
+    <a href="{% url 'product_list' %}" class="btn btn-amber">Browse Products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}ShopPy — Home{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Shop <span>Smarter</span>,<br>Live Better</h1>
+  <p>Discover thousands of products at unbeatable prices.</p>
+  <div class="hero-btns">
+    <a href="{% url 'product_list' %}" class="btn btn-amber">Browse Products</a>
+    {% if not user.is_authenticated %}
+      <a href="{% url 'register' %}" class="btn btn-outline" style="color:#fff;border-color:#fff;">Create Account</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container">
+
+  {% if categories %}
+  <div style="margin-bottom: 3rem;">
+    <div class="page-header"><h1>Shop by Category</h1></div>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      {% for cat in categories %}
+        <a href="{% url 'product_list' %}?category={{ cat.slug }}"
+           style="background:#fff; border:1px solid #e5e5e5; border-radius:10px; padding:12px 24px; text-decoration:none; color:#1a1a1a; font-weight:600; transition:all 0.2s;"
+           onmouseover="this.style.background='#f59e0b';this.style.borderColor='#f59e0b'"
+           onmouseout="this.style.background='#fff';this.style.borderColor='#e5e5e5'">
+          {{ cat.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="page-header">
+    <h1>Featured Products</h1>
+    <p>Hand-picked deals just for you</p>
+  </div>
+
+  <div class="product-grid">
+    {% for product in featured %}
+    <div class="product-card">
+      <a href="{% url 'product_detail' product.slug %}">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+          <div class="product-img-placeholder">&#128722;</div>
+        {% endif %}
+      </a>
+      <div class="product-info">
+        {% if product.category %}<p class="product-category">{{ product.category.name }}</p>{% endif %}
+        <a href="{% url 'product_detail' product.slug %}" class="product-name">{{ product.name }}</a>
+        <p class="product-price">${{ product.price }}</p>
+        <span class="badge {% if product.in_stock %}badge-green{% else %}badge-red{% endif %}">
+          {% if product.in_stock %}In Stock{% else %}Out of Stock{% endif %}
+        </span>
+      </div>
+      <div class="product-footer">
+        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-amber btn-sm" {% if not product.in_stock %}style="opacity:0.4;pointer-events:none"{% endif %}>Add to Cart</a>
+        <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline btn-sm">View</a>
+      </div>
+    </div>
+    {% empty %}
+      <p style="color:#888;">No products yet. <a href="/admin/">Add some from admin.</a></p>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

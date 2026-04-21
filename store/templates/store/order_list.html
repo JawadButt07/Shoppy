@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}My Orders — ShopPy{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header"><h1>My Orders</h1></div>
+
+  {% if orders %}
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Order #</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td style="font-weight:700;">#{{ order.id }}</td>
+          <td>{{ order.created_at|date:"d M Y" }}</td>
+          <td>{{ order.items.count }} item{{ order.items.count|pluralize }}</td>
+          <td style="font-weight:700;">${{ order.total_amount }}</td>
+          <td><span class="badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+          <td><a href="{% url 'order_detail' order.id %}" class="btn btn-outline btn-sm">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:4rem 0;">
+    <div style="font-size:4rem;margin-bottom:1rem;">&#128230;</div>
+    <h2 style="font-size:1.3rem;margin-bottom:0.5rem;">No orders yet</h2>
+    <a href="{% url 'product_list' %}" class="btn btn-amber" style="margin-top:1rem;">Start Shopping</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

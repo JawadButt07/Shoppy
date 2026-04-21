@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Products — ShopPy{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="layout-with-sidebar">
+
+    <div class="sidebar">
+      <h3>Categories</h3>
+      <a href="{% url 'product_list' %}" class="{% if not current_category %}active{% endif %}">All Products</a>
+      {% for cat in categories %}
+        <a href="?category={{ cat.slug }}" class="{% if current_category.slug == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+      {% endfor %}
+    </div>
+
+    <div>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <h1>{% if current_category %}{{ current_category.name }}{% elif search_query %}Results for "{{ search_query }}"{% else %}All Products{% endif %}</h1>
+          <p>{{ products.count }} product{{ products.count|pluralize }} found</p>
+        </div>
+      </div>
+
+      <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+          <a href="{% url 'product_detail' product.slug %}">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <div class="product-img-placeholder">&#128722;</div>
+            {% endif %}
+          </a>
+          <div class="product-info">
+            {% if product.category %}<p class="product-category">{{ product.category.name }}</p>{% endif %}
+            <a href="{% url 'product_detail' product.slug %}" class="product-name">{{ product.name }}</a>
+            <p class="product-price">${{ product.price }}</p>
+            <span class="badge {% if product.in_stock %}badge-green{% else %}badge-red{% endif %}">
+              {% if product.in_stock %}In Stock ({{ product.stock }}){% else %}Out of Stock{% endif %}
+            </span>
+          </div>
+          <div class="product-footer">
+            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-amber btn-sm" {% if not product.in_stock %}style="opacity:0.4;pointer-events:none"{% endif %}>Add to Cart</a>
+            <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline btn-sm">View</a>
+          </div>
+        </div>
+        {% empty %}
+          <p style="color:#888;">No products found.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Register — ShopPy{% endblock %}
+{% block content %}
+<div style="max-width:460px;margin:4rem auto;padding:0 1rem;">
+  <div class="card" style="padding:2rem;">
+    <h1 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">Create Account</h1>
+    <p style="color:#888;margin-bottom:1.5rem;">Join ShopPy today</p>
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p class="form-error">{{ field.errors.0 }}</p>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-amber" style="width:100%;padding:12px;">Create Account</button>
+    </form>
+    <p style="text-align:center;margin-top:1.5rem;color:#888;font-size:0.9rem;">
+      Already have an account? <a href="{% url 'login' %}" style="color:#f59e0b;font-weight:600;">Login</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

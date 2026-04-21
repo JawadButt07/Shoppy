@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Order #{{ order.id }} — ShopPy{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <h1>Order #{{ order.id }}</h1>
+      <p>Placed on {{ order.created_at|date:"d M Y, H:i" }}</p>
+    </div>
+    <span class="badge status-{{ order.status }}" style="font-size:0.9rem;padding:6px 14px;">{{ order.get_status_display }}</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:2rem;">
+
+    <div class="card">
+      <table>
+        <thead><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th></tr></thead>
+        <tbody>
+          {% for item in order.items.all %}
+          <tr>
+            <td style="font-weight:600;">{{ item.product_name }}</td>
+            <td>${{ item.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td style="font-weight:700;">${{ item.subtotal }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div style="padding:14px;text-align:right;font-size:1.1rem;font-weight:800;border-top:1px solid #e5e5e5;">
+        Total: ${{ order.total_amount }}
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="padding:1.5rem;">
+        <h2 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">Shipping Address</h2>
+        <p style="font-weight:600;">{{ order.full_name }}</p>
+        <p style="color:#666;font-size:0.9rem;margin-top:4px;">{{ order.address }}</p>
+        <p style="color:#666;font-size:0.9rem;">{{ order.city }}, {{ order.postal_code }}</p>
+        <p style="color:#666;font-size:0.9rem;">{{ order.email }}</p>
+      </div>
+      <a href="{% url 'order_list' %}" class="btn btn-outline" style="display:block;text-align:center;margin-top:1rem;padding:12px;">Back to Orders</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

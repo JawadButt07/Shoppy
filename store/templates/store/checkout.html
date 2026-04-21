@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Checkout — ShopPy{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header"><h1>Checkout</h1></div>
+
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:2rem;">
+
+    <div class="card" style="padding:2rem;">
+      <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;">Shipping Information</h2>
+      <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+          <label>{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<p class="form-error">{{ field.errors.0 }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-amber" style="width:100%;padding:14px;margin-top:0.5rem;">Place Order</button>
+      </form>
+    </div>
+
+    <div>
+      <div class="card" style="padding:1.5rem;">
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem;">Order Summary</h2>
+        {% for item in cart.items.all %}
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:0.9rem;">
+          <span>{{ item.product.name }} <span style="color:#888;">x{{ item.quantity }}</span></span>
+          <span style="font-weight:600;">${{ item.subtotal }}</span>
+        </div>
+        {% endfor %}
+        <div style="display:flex;justify-content:space-between;padding-top:12px;margin-top:4px;font-size:1.1rem;font-weight:800;">
+          <span>Total</span><span>${{ cart.total }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
