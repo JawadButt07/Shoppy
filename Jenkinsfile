@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/JawadButt07/Shop.py-.git'
+                git branch: 'main', url: 'https://github.com/JawadButt07/Shoppy.git'
             }
         }
         stage('Build Docker Image') {
